@@ -2,4 +2,3 @@ cryptography
 pillow
 numpy
 pycryptodome
-jpegio
