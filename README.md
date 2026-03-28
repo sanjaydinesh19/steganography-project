@@ -174,4 +174,4 @@ The transition from JPEG (DCT) to LSB ensures:
 ---
 
 ## Author
-Sanjay Dinesh
+Sanjay Dineshgi

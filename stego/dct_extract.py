@@ -1,4 +1,4 @@
-import jpegio as jio
+from PIL import Image
 
 
 def bits_to_bytes(bits):
@@ -12,30 +12,27 @@ def bits_to_bytes(bits):
 
 
 def extract_payload(stego_path: str):
+    img = Image.open(stego_path).convert("RGB")
+    pixels = list(img.getdata())
 
-    jpeg = jio.read(stego_path)
-    coef = jpeg.coef_arrays[0]
-
-    h, w = coef.shape
     bits = []
 
-    for i in range(h):
-        for j in range(w):
+    for pixel in pixels:
+        r, g, b = pixel
+        bits.append(r & 1)
+        bits.append(g & 1)
+        bits.append(b & 1)
 
-            if i % 8 == 0 and j % 8 == 0:
-                continue
-
-            if coef[i, j] == 0:
-                continue
-
-            bits.append(coef[i, j] & 1)
-
-    # First 32 bits → length
+    # First 32 bits = length
     length_bits = bits[:32]
     length_bytes = bits_to_bytes(length_bits)
     payload_length = int.from_bytes(length_bytes, 'big')
 
     total_bits = payload_length * 8
+
+    if len(bits) < 32 + total_bits:
+        raise ValueError("Corrupted or incomplete payload")
+
     payload_bits = bits[32:32 + total_bits]
 
     return bits_to_bytes(payload_bits)
