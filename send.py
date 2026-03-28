@@ -6,7 +6,7 @@ from utils.helpers import build_payload
 from stego.dct_embed import embed_payload  # LSB version
 
 
-HOST = "127.0.0.1"   # change to laptop IP later
+HOST = "192.168.0.255"
 PORT = 5000
 
 
