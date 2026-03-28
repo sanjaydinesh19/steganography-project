@@ -6,7 +6,7 @@ from utils.helpers import build_payload
 from stego.dct_embed import embed_payload  # LSB version
 
 
-HOST = "192.168.0.255"
+HOST = "192.168.0.195"
 PORT = 5000
 
 
