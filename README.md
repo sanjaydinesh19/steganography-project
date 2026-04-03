@@ -24,7 +24,8 @@ The goal is to ensure that:
 - Python Libraries
   - jpegio (initial approach)
   - Pillow / OpenCV (final approach for LSB)
-  - pyserial (for Pi to Laptop communication)
+  - pyserial (initial communication approach)
+  - socket (final communication over TCP)
 
 ---
 
@@ -40,17 +41,11 @@ The goal is to ensure that:
 
 ### Phase 1: Pi to Laptop
 1. Plaintext message is encrypted using AES-GCM
-2. Ciphertext is sent via serial communication
-3. Laptop receives and decrypts the message
-
----
-
-### Phase 2: Laptop to Pi
-1. Laptop encrypts its own message using AES-GCM
-2. Ciphertext is embedded inside an image using steganography
-3. Stego image is sent to Raspberry Pi
-4. Raspberry Pi extracts hidden data
-5. Raspberry Pi decrypts ciphertext to recover plaintext
+2. Ciphertext is embedded into an image using LSB steganography
+3. Stego image is transmitted over TCP
+4. Laptop receives the image
+5. Hidden payload is extracted
+6. Ciphertext is decrypted to recover plaintext
 
 ---
 
@@ -89,7 +84,7 @@ The project was redesigned to ensure:
 
 - Data is embedded in the Least Significant Bits of pixel values
 - Works directly on image pixels (RGB channels)
-- Typically uses PNG images (lossless format)
+- Uses PNG images (lossless format)
 
 ---
 
@@ -148,6 +143,73 @@ AES-GCM (security) + LSB steganography (compatibility)
 - Image-based hidden data transmission
 - Cross-device communication (Pi and Laptop)
 - Modular design (crypto and stego separated)
+- TCP-based communication between nodes
+
+---
+
+## How to Run (TCP Pipeline Test)
+
+### Prerequisites (Both Pi and Laptop)
+
+```bash
+cd steganography-project
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Ensure:
+- Both devices are connected to the same network
+- PNG input images are present (e.g., `input_512.png`, `input_1024.png`)
+
+---
+
+### Step 1: Start Receiver (Laptop)
+
+```bash
+python3 receive.py
+```
+
+Expected output:
+```
+Waiting for connection...
+```
+
+---
+
+### Step 2: Run Sender (Raspberry Pi)
+
+```bash
+python3 send.py
+```
+
+Expected output:
+```
+Payload length: XXX
+Sending image of size: XXXXX
+Image sent successfully.
+```
+
+---
+
+### Step 3: Verify Output (Laptop)
+
+After receiving:
+
+```
+Connected by (...)
+Receiving image of size: XXXXX
+Image received and saved as received.png
+Recovered message: b'...'
+```
+
+---
+
+## Verification Checklist
+
+- No errors during execution
+- Image (`received.png`) is generated
+- Extracted message matches original plaintext
+- Same encryption key used on both devices
 
 ---
 
@@ -156,7 +218,8 @@ AES-GCM (security) + LSB steganography (compatibility)
 - Key-based random embedding (PRNG)
 - Error correction codes
 - Hybrid DCT + LSB system
-- Wireless communication (WiFi instead of serial)
+- Hardware-backed key storage (ATECC)
+- Bidirectional communication
 
 ---
 
@@ -165,13 +228,14 @@ AES-GCM (security) + LSB steganography (compatibility)
 This project demonstrates a practical secure communication system by combining:
 - Strong encryption (AES-GCM)
 - Covert data hiding (Steganography)
+- Network-based communication (TCP sockets)
 
 The transition from JPEG (DCT) to LSB ensures:
 - Real-world deployability
 - Compatibility with embedded systems
-- Reliable bidirectional communication
+- Reliable cross-device communication
 
 ---
 
 ## Author
-Sanjay Dineshgi
+Sanjay Dinesh
