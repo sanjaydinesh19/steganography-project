@@ -1,9 +1,11 @@
 import socket
 import os
 
+from Crypto.Random import get_random_bytes
+
 from crypto.aes_gcm import encrypt_data
 from utils.helpers import build_payload
-from stego.dct_embed import embed_payload  # LSB version
+from stego.dct_embed import embed_payload
 
 
 HOST = "192.168.0.195"
@@ -11,7 +13,12 @@ PORT = 5000
 
 
 def main():
-    key = b'0123456789abcdef0123456789abcdef'
+    # Generate a fresh 256-bit key every run 
+    key = get_random_bytes(32)
+
+    # Save key for receiver
+    with open("session.key", "wb") as f:
+        f.write(key)
 
     msg = b"Hello from Raspberry Pi via Steganography!"
 
