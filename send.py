@@ -13,10 +13,14 @@ PORT = 5000
 def main():
     key = get_random_bytes(32)
 
-    msg = b"Hello from Raspberry Pi via Steganography!"
+    # 🔹 Take message input from user
+    user_input = input("Enter message to send: ")
+    msg = user_input.encode()
 
     nonce, ct, tag = encrypt_data(msg, key)
     payload = build_payload(nonce, tag, ct)
+
+    print("Payload length:", len(payload))
 
     embed_payload("input(512x512).png", "stego.png", payload)
 
@@ -28,10 +32,10 @@ def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
 
-        # Send key first
+        # Send key
         s.sendall(len(key).to_bytes(2, 'big') + key)
 
-        # Then send image
+        # Send image
         s.sendall(len(img_data).to_bytes(4, 'big') + img_data)
 
     print("Image + key sent successfully.")
