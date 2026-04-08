@@ -6,7 +6,7 @@ from utils.helpers import build_payload
 from stego.dct_embed import embed_payload
 
 
-HOST = "192.168.0.195"
+HOST = "192.168.240.154" #Sahi IP
 PORT = 5000
 
 
