@@ -22,7 +22,7 @@ def main():
 
     print("Payload length:", len(payload))
 
-    embed_payload("input(512x512).png", "stego.png", payload)
+    embed_payload("input(2048x2048).png", "stego.png", payload)
 
     with open("stego.png", "rb") as f:
         img_data = f.read()
